@@ -1,0 +1,15 @@
+D:\projects\Saper\Saper\obj\Debug\Saper.csprojAssemblyReference.cache
+D:\projects\Saper\Saper\obj\Debug\MainWindow.g.cs
+D:\projects\Saper\Saper\obj\Debug\App.g.cs
+D:\projects\Saper\Saper\obj\Debug\Saper_MarkupCompile.cache
+D:\projects\Saper\Saper\obj\Debug\Saper_MarkupCompile.lref
+D:\projects\Saper\Saper\bin\Debug\Saper.exe.config
+D:\projects\Saper\Saper\bin\Debug\Saper.exe
+D:\projects\Saper\Saper\bin\Debug\Saper.pdb
+D:\projects\Saper\Saper\obj\Debug\MainWindow.baml
+D:\projects\Saper\Saper\obj\Debug\Saper.g.resources
+D:\projects\Saper\Saper\obj\Debug\Saper.Properties.Resources.resources
+D:\projects\Saper\Saper\obj\Debug\Saper.csproj.GenerateResource.cache
+D:\projects\Saper\Saper\obj\Debug\Saper.csproj.CoreCompileInputs.cache
+D:\projects\Saper\Saper\obj\Debug\Saper.exe
+D:\projects\Saper\Saper\obj\Debug\Saper.pdb
