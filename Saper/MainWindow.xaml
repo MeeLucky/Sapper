@@ -7,10 +7,32 @@
         mc:Ignorable="d"
         Title="Сапёр" 
         ResizeMode="NoResize"
-        Height="170" Width="150">
+        Height="170" Width="200">
     <StackPanel Orientation="Vertical">
-        <StackPanel x:Name="UpMenu"></StackPanel>
+        <Grid x:Name="UpMenu" Height="50">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock x:Name="BombLeft" Text="10" 
+                       Height="30" Width="40"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       DockPanel.Dock="Left" Grid.Column="0"
+                       FontSize="20"/>
+
+            <Button Content="R" Height="30" Width="30" x:Name="Restart"
+                    HorizontalAlignment="Center" Grid.Column="1"/>
+
+            <TextBlock Height="30" Width="60" Text="00:00" x:Name="TimeDisplay"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       DockPanel.Dock="Right" Grid.Column="2"
+                       FontSize="20"/>
+        </Grid>
         <StackPanel x:Name="GameField" Orientation="Vertical"/>
     </StackPanel>
 </Window>
- 

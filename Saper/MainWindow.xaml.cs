@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace Saper
 {
@@ -26,15 +29,29 @@ namespace Saper
         static int itemCount = h*w - bomb;
         static int[,] field = new int[h,w];
         static StackPanel gameField;
-        static int btnSize = 30;
+        static TextBlock bombLeft;
+        static TextBlock timeDisplay;
+        static int btnSize = 20;
         static int btnFontSize = Convert.ToInt32(btnSize / 1.4);
+        static bool game = true;
+        static bool firstClick = false;
+        static DateTime start;
+        static DispatcherTimer timer;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            this.Height = h* btnSize + 39;
-            this.Width = w* btnSize + 16;
             gameField = GameField;
+            bombLeft = BombLeft;
+            timeDisplay = TimeDisplay;
+
+            Restart.Click += Restart_Click;
+            bombLeft.Text = bomb.ToString();
+
+            this.Height = h* btnSize + 39 + UpMenu.Height;
+            this.Width = w* btnSize + 16;
+            
             createField();
             DisplayField();
         }
@@ -43,11 +60,54 @@ namespace Saper
         static void Victory_Check ()
         {
             if (itemCount <= 0)
-                MessageBox.Show("you win!");
+            {
+                timer.Stop();
+                game = false;
+                MessageBox.Show("You win!");
+
+            }
+        }
+
+        static void Restart_Click(object v, RoutedEventArgs e)
+        {
+            timer.Stop();
+            timeDisplay.Text = "00:00";
+            firstClick = false;
+            gameField.Children.Clear();
+            itemCount = h * w - bomb;
+            createField();
+            DisplayField();
+            game = true;
+        }
+
+        static void timeUp(object v, EventArgs e)
+        {
+            if(game)
+            {
+                TimeSpan span;
+                span = DateTime.Now - start;
+                string timeStr = span.ToString(@"mm\:ss");
+                timeDisplay.Text = timeStr;
+            }
         }
 
         static void Try_Click (object v, RoutedEventArgs e)
         {
+            if (!game)
+                return;
+
+            if (!firstClick)
+            {
+                start = DateTime.Now;
+
+                timer = new DispatcherTimer();
+                timer.Tick += new EventHandler(timeUp);
+                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Start();
+
+                firstClick = true;
+            }
+
             Button b = (Button)v;
             if (Convert.ToString(b.Content) != "")
                 return;
@@ -57,8 +117,12 @@ namespace Saper
             if (state[2] == -1)
             {
                 //death
+                b.FontSize = btnSize;
+                b.VerticalAlignment = VerticalAlignment.Top;
+                b.Background = new SolidColorBrush(Colors.Red);
                 b.Content = "*";
                 MessageBox.Show("you lose...");
+                game = false;
                 return;
             }
 
@@ -80,6 +144,9 @@ namespace Saper
 
         static void MakeFlag_Click(object v, RoutedEventArgs e)
         {
+            if (!game)
+                return;
+
             Button b = (Button)v;
             int[] state = GetState(b);
 
@@ -87,10 +154,12 @@ namespace Saper
             {
                 b.Foreground = new SolidColorBrush(Colors.Red);
                 b.Content = "F";
+                bombLeft.Text = (Convert.ToInt32(bombLeft.Text) - 1).ToString();
             }
             else if (Convert.ToString(b.Content) == "F")
             {
                 b.Content = "";
+                bombLeft.Text = (Convert.ToInt32(bombLeft.Text) + 1).ToString();
             }
         }
 
@@ -108,14 +177,72 @@ namespace Saper
                 return;
             }
 
+            bool up = false;
+            bool right = false;
+            bool down = false;
+            bool left = false;
+
             if (pv + 1 < h)
+            {
                 OpenArea(pv + 1, ph);
+                down = true;
+            }
             if (ph + 1 < w)
+            {
                 OpenArea(pv, ph + 1);
+                right = true;
+            }
             if (pv - 1 >= 0)
+            {
                 OpenArea(pv - 1, ph);
+                up = true;
+            }
             if (ph - 1 >= 0)
+            {
                 OpenArea(pv, ph - 1);
+                left = true;
+            }
+
+            if(up && left)
+            {
+                row = (StackPanel)gameField.Children[pv - 1];
+                p = (Button)row.Children[ph - 1];
+                if (GetState(p)[2] == 0)
+                    OpenArea(pv - 1, ph - 1);
+                else
+                    OpenItem(p, GetState(p)[2] );
+            }
+
+            if (up && right)
+            {
+                row = (StackPanel)gameField.Children[pv - 1];
+                p = (Button)row.Children[ph + 1];
+                if (GetState(p)[2] == 0)
+                    OpenArea(pv - 1, ph + 1);
+                else
+                    OpenItem(p, GetState(p)[2]);
+            }
+
+            if (down && left)
+            {
+                row = (StackPanel)gameField.Children[pv + 1];
+                p = (Button)row.Children[ph - 1];
+                if (GetState(p)[2] == 0)
+                    OpenArea(pv + 1, ph - 1);
+                else
+                    OpenItem(p, GetState(p)[2]);
+            }
+
+            if (down && right)
+            {
+                row = (StackPanel)gameField.Children[pv + 1];
+                p = (Button)row.Children[ph + 1];
+                if (GetState(p)[2] == 0)
+                    OpenArea(pv+1, ph+1);
+                else
+                    OpenItem(p, GetState(p)[2]);
+            }
+
         }
 
         static int [] GetState(Button b)
@@ -129,11 +256,16 @@ namespace Saper
 
         static void OpenItem(Button b, int state2)
         {
-            itemCount--;
+            if (Convert.ToString(b.Content) == "")
+                itemCount--;
             b.Content = state2;
             b.Background = new SolidColorBrush(Colors.White);
             switch (state2)
             {
+                case 0:
+                    b.Background = new SolidColorBrush(Colors.White);
+                    b.Content = " ";
+                    break;
                 case 1:
                     b.Foreground = new SolidColorBrush(Colors.Blue);
                     break;
@@ -169,8 +301,6 @@ namespace Saper
 
         static void DisplayField ()
         {
-            //нужно использовать грид и создавать его зараение с размерами х на в
-            //и изменять размер окна
             for(int i = 0; i < h; i++)
             {
                 StackPanel row = new StackPanel();
