@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.ComponentModel;
 using System.Windows.Threading;
 
 namespace Saper
@@ -25,12 +14,13 @@ namespace Saper
     {
         static int h = 10;
         static int w = 10;
-        static int bomb = h * w / 10;
+        static int bomb = 10;
         static int itemCount = h*w - bomb;
         static int[,] field = new int[h,w];
         static StackPanel gameField;
         static TextBlock bombLeft;
         static TextBlock timeDisplay;
+        static Button face;
         static int btnSize = 20;
         static int btnFontSize = Convert.ToInt32(btnSize / 1.4);
         static bool game = true;
@@ -46,12 +36,12 @@ namespace Saper
             bombLeft = BombLeft;
             timeDisplay = TimeDisplay;
 
-            Restart.Click += Restart_Click;
             bombLeft.Text = bomb.ToString();
+            face = Restart;
 
-            this.Height = h* btnSize + 39 + UpMenu.Height;
+            this.Height = h * btnSize + 39 + UpMenu.Height;
             this.Width = w* btnSize + 16;
-            
+
             createField();
             DisplayField();
         }
@@ -63,21 +53,78 @@ namespace Saper
             {
                 timer.Stop();
                 game = false;
-                MessageBox.Show("You win!");
-
+                Image faceImg = new Image();
+                faceImg.Source = new BitmapImage(new Uri("Face-Win.png", UriKind.Relative));
+                face.Content = faceImg;
             }
         }
 
-        static void Restart_Click(object v, RoutedEventArgs e)
+        private void ChangeLevel_Click (object v, RoutedEventArgs e)
         {
-            timer.Stop();
+            MenuItem item = (MenuItem)v;
+            int level = Convert.ToInt32(item.Tag);
+            switch(level)
+            {
+                case 0:
+                    break;
+                case 1:
+                    h = 10; w = 10; bomb = 10;
+                    break;
+                case 2:
+                    h = 16; w = 16; bomb = 40;
+                    break;
+                case 3:
+                    h = 16; w = 30; bomb = 99;
+                    break;
+                case 4:
+                    TextBox height = (TextBox)Special.Children[1];
+                    TextBox width = (TextBox)Special.Children[2];
+                    TextBox bombs = (TextBox)Special.Children[3];
+
+                    h = Convert.ToInt32(height.Text);
+                    w = Convert.ToInt32(width.Text);
+                    bomb = Convert.ToInt32(bombs.Text);
+                    break;
+            }
+
+            field = new int[h, w];
+            itemCount = h * w - bomb;
+
+            this.Height = h * btnSize + 39 + UpMenu.Height;
+            this.Width = w * btnSize + 16;
+            GameField.MinWidth = w * btnSize + 16 + 200;
+            GameField.Children.Clear();
+            BombLeft.Text = bomb.ToString();
+            createField();
+            DisplayField();
+        }
+
+        private void Restart_Click(object v, RoutedEventArgs e)
+        {
+            try{timer.Stop();} catch (Exception) {}
             timeDisplay.Text = "00:00";
             firstClick = false;
+            Image faceImg = new Image();
+            faceImg.Source = new BitmapImage(new Uri("Face.png", UriKind.Relative));
+            face.Content = faceImg;
             gameField.Children.Clear();
             itemCount = h * w - bomb;
+            bombLeft.Text = bomb.ToString();
+            field = new int [h,w];
             createField();
             DisplayField();
             game = true;
+        }
+
+        private void Change_BtnSize_Click (object v, RoutedEventArgs e)
+        {
+            int size = Convert.ToInt32(ButtonSize.Text);
+            if (size > 0)
+                btnSize = size + 18;
+
+            this.Height = h * btnSize + 39 + UpMenu.Height;
+            this.Width = w * btnSize + 16;
+            Restart_Click(v, e);
         }
 
         static void timeUp(object v, EventArgs e)
@@ -121,7 +168,9 @@ namespace Saper
                 b.VerticalAlignment = VerticalAlignment.Top;
                 b.Background = new SolidColorBrush(Colors.Red);
                 b.Content = "*";
-                MessageBox.Show("you lose...");
+                Image faceImg = new Image();
+                faceImg.Source = new BitmapImage(new Uri("Face-Death.png", UriKind.Relative));
+                face.Content = faceImg;
                 game = false;
                 return;
             }
@@ -313,7 +362,7 @@ namespace Saper
                     btn.Height = btnSize;
                     btn.FontSize = btnFontSize;
                     btn.FontWeight = FontWeights.ExtraBold;
-                    btn.Click += Try_Click;
+                    btn.PreviewMouseLeftButtonDown += Try_Click;
                     btn.MouseRightButtonDown += MakeFlag_Click;
                     btn.Tag = $"{i},{j},{field[i, j]}";
                     row.Children.Add(btn);

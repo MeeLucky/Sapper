@@ -20,7 +20,6 @@ D:\projects\Sapper\Saper\obj\Debug\Saper.csprojAssemblyReference.cache
 D:\projects\Sapper\Saper\obj\Debug\MainWindow.g.cs
 D:\projects\Sapper\Saper\obj\Debug\App.g.cs
 D:\projects\Sapper\Saper\obj\Debug\Saper_MarkupCompile.cache
-D:\projects\Sapper\Saper\obj\Debug\Saper_MarkupCompile.lref
 D:\projects\Sapper\Saper\obj\Debug\MainWindow.baml
 D:\projects\Sapper\Saper\obj\Debug\Saper.g.resources
 D:\projects\Sapper\Saper\obj\Debug\Saper.Properties.Resources.resources

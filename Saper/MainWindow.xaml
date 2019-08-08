@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Saper"
         mc:Ignorable="d"
         Title="Сапёр" 
         ResizeMode="NoResize"
@@ -11,6 +10,7 @@
     <StackPanel Orientation="Vertical">
         <Grid x:Name="UpMenu" Height="50">
             <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -18,19 +18,64 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
+            <Menu Height="20" VerticalAlignment="Top" Grid.ColumnSpan="3" x:Name="Menu">
+                <MenuItem Header="Игра">
+                    <MenuItem Icon="Esc" Header="Новая игра" Click="Restart_Click"/>
+                    <MenuItem Header="Сложность" x:Name="Level">
+                        <Separator/>
+                        <MenuItem Header="Высота   Ширина   Мины" 
+                                  HorizontalAlignment="Right" FontSize="10"/>
+                        <MenuItem Header="Новичёк     9           9           10" 
+                                  Tag="1" Click="ChangeLevel_Click"/>
+                        <MenuItem Header="Средний    16         16          40" 
+                                  Tag="2" Click="ChangeLevel_Click"/>
+                        <MenuItem Header="Сложный   16         30          99" 
+                                  Tag="3" Click="ChangeLevel_Click"/>
+                        <MenuItem Tag="4" Click="ChangeLevel_Click">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal" x:Name="Special">
+                                    <TextBlock Text="Особоый  " Padding="0, 5, 0 ,0"/>
+                                    <TextBox Width="35" Text="20"
+                                             Padding="5"/>
+                                    <TextBox Width="35" Text="30" 
+                                             Padding="5" Margin="5, 0, 0, 0"/>
+                                    <TextBox Width="35" Text="145" 
+                                             Padding="5" Margin="10, 0, 0, 0"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                    </MenuItem>
+
+                    <MenuItem Tag="0" Click="Change_BtnSize_Click">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Размер ячекий "/>
+                                <TextBox x:Name="ButtonSize" Text="2" Width="25"/>
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+
             <TextBlock x:Name="BombLeft" Text="10" 
                        Height="30" Width="40"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                       DockPanel.Dock="Left" Grid.Column="0"
+                       DockPanel.Dock="Left" Grid.Column="0" Grid.Row="1"
                        FontSize="20"/>
 
-            <Button Content="R" Height="30" Width="30" x:Name="Restart"
-                    HorizontalAlignment="Center" Grid.Column="1"/>
+            <Button Height="27" Width="27" 
+                    x:Name="Restart" Click="Restart_Click"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    IsCancel="True" Grid.Column="1" Grid.Row="1">
+                <Button.Content>
+                    <Image Source="Face.png" />
+                </Button.Content>
+            </Button>
 
             <TextBlock Height="30" Width="60" Text="00:00" x:Name="TimeDisplay"
                        VerticalAlignment="Center" HorizontalAlignment="Center"
-                       DockPanel.Dock="Right" Grid.Column="2"
+                       DockPanel.Dock="Right" Grid.Column="2" Grid.Row="1"
                        FontSize="20"/>
         </Grid>
         <StackPanel x:Name="GameField" Orientation="Vertical"/>
